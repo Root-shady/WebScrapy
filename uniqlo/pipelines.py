@@ -43,7 +43,7 @@ class MySQLStorePipeLine(object):
 
     def process_item(self, item, spider):
         try:
-            sql =  """INSERT INTO uniqlo VALUES(null, "%s", "%s", %f, "%s", "%s", "%s", "%s", "%s", "%s", %d);""" % (item['title'], item['description'], float(item['price']), item['item_code'], item['trace'], item['image_path'], item['size'],item['color'], item['image_urls'][0], item['group_id'])
+            sql =  """INSERT INTO uniqlo VALUES(null, "%s", "%s", %f, "%s", "%s", "%s", "%s", "%s", "%s", %d);""" % (item['title'], item['description'], float(item['price']), item['item_code'], item['trace'], item['image_path'], item['size'],item['color'], item['image_list_path'], item['group_id'])
 
             self.cursor.execute(sql)
             self.conn.commit()
@@ -52,6 +52,7 @@ class MySQLStorePipeLine(object):
         return item
     def close_spider(self, spider):
         self.conn.close()
+
 
 class ImageStorePipeline(ImagesPipeline):
     def set_filename(self, response):
