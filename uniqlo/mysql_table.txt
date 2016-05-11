@@ -1,0 +1,14 @@
+CREATE TABLE uniqlo(
+  id INT PRIMARY KEY COMMENT '衣服记录id' auto_increment,
+  title CHAR(20) COMMENT '标题',
+  description VARCHAR(300) COMMENT '描述',
+  price DECIMAL(6,2)  COMMENT '衣服价格',
+  item_code CHAR(10) COMMENT '产品编码', 
+  trace CHAR(50) COMMENT '产品路径',
+  image CHAR(100) COMMENT '图片的路径',
+  size CHAR(50) COMMENT '产品的尺寸',
+  color CHAR(10) COMMENT '颜色',
+  detail_image VARCHAR(500) COMMENT '同类产品的所有图片路径',
+  group_id INT COMMENT '同类产品的id'
+);
+

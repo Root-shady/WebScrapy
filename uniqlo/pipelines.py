@@ -56,6 +56,7 @@ class MySQLStorePipeLine(object):
 
 class ImageStorePipeline(ImagesPipeline):
     def set_filename(self, response):
+        # instead of using the SHA1, use the md5 as required
         # Return the image file name, use the md5 value of the given url
         return 'full/{0}.jpg'.format(hashlib.md5(response.url).hexdigest())
 
