@@ -63,8 +63,15 @@ DOWNLOAD_DELAY=0.3
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
 #    'uniqlo.pipelines.SomePipeline': 300,
-    'uniqlo.pipelines.MySQLStorePipeLine'
+    'uniqlo.pipelines.MySQLStorePipeLine': 1,
+#    'scrapy.pipelines.images.ImagesPipeline' : 2,
+    'uniqlo.pipelines.ImageStorePipeline': 2,
 }
+import os
+BASE_URL = os.getcwd()
+IMAGES_FOLDER = 'images'
+IMAGES_STORE = os.path.join(BASE_URL, IMAGES_FOLDER)
+print(IMAGES_STORE)
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html

@@ -1,5 +1,7 @@
 import scrapy
 from uniqlo.items import ClothItem
+import hashlib
+import os
 
 
 class UniqloSpider(scrapy.Spider):
@@ -9,6 +11,7 @@ class UniqloSpider(scrapy.Spider):
                 "http://www.uniqlo.com/sg/",
             ]
     group_id = 0
+    CWD = os.getcwd()
 
     def parse(self, response):
         for url in response.xpath('//div[@class="cateNaviLink"]/a/@href').extract():
@@ -26,8 +29,11 @@ class UniqloSpider(scrapy.Spider):
     def parse_item(self, response):
         # Takes the cloth detail url, and extract information form the page
         cols = response.xpath('//ul[@id="listChipColor"]/li/a')
-        images = response.xpath('//ul[@id="listChipColor"]/li/a/img/@largesrc').extract()
-        images = self.list_to_str(images)
+        image_list_urls = response.xpath('//ul[@id="listChipColor"]/li/a/img/@largesrc').extract()
+
+        image_list_urls = [hashlib.md5('http:' + i).hexdigest() for i in image_list_urls]
+        image_list_urls = [self.CWD + '/full/' + i + 'jpg' for i in image_list_urls ]
+        
         title = response.xpath('//h1[@id="goodsNmArea"]/span/text()').extract()[0]
         description = response.xpath('//div[@id="prodDetail"]/div[contains(@class, "content")]/text()').extract()[1].strip()
         code = response.xpath('//ul[@class="basic"]/li[@class="number"]/text()').extract()
@@ -43,8 +49,9 @@ class UniqloSpider(scrapy.Spider):
 
         for col in cols:
             color =  col.xpath('@title').extract()[0]
-            image = col.xpath('img/@largesrc').extract()[0]
+            image_urls = col.xpath('img/@largesrc').extract()[0]
+            image_urls = 'http:' + image_urls
+            image_path = self.CWD + '/full/' + hashlib.md5(image_urls).hexdigest()+'.jpg'
             item = ClothItem(title=title, description=description,price=price,
-                    item_code=item_code, trace=trace, image=image,
-                    detail_image=images, color=color, group_id=self.group_id, size=size)
+                    item_code=item_code, trace=trace, image_urls=[image_urls], image_path=image_path, color=color, group_id=self.group_id, image_list_path=image_list_urls, size=size)
             yield item

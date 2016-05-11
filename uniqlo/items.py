@@ -14,9 +14,11 @@ class ClothItem(scrapy.Item):
     price = scrapy.Field()
     item_code = scrapy.Field()
     trace = scrapy.Field()
-    image = scrapy.Field()
+    image_path = scrapy.Field()
     size = scrapy.Field()
-    detail_image = scrapy.Field()
+    image_list_path = scrapy.Field()
     color = scrapy.Field()
     group_id = scrapy.Field()
+    image_urls = scrapy.Field() 
+    images = scrapy.Field()
 

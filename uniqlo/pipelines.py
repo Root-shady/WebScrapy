@@ -5,9 +5,12 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
+import scrapy
 from scrapy.exceptions import DropItem
 import MySQLdb
-from twisted.enterprise import adbapi
+#from twisted.enterprise import adbapi
+from scrapy.pipelines.images import ImagesPipeline
+import hashlib
 
 
 class UniqloPipeline(object):
@@ -40,7 +43,7 @@ class MySQLStorePipeLine(object):
 
     def process_item(self, item, spider):
         try:
-            sql =  """INSERT INTO uniqlo VALUES(null, "%s", "%s", %f, "%s", "%s", "%s", "%s", "%s", "%s", %d);""" % (item['title'], item['description'], float(item['price']), item['item_code'], item['trace'], item['image'], item['size'],item['color'], item['detail_image'], item['group_id'])
+            sql =  """INSERT INTO uniqlo VALUES(null, "%s", "%s", %f, "%s", "%s", "%s", "%s", "%s", "%s", %d);""" % (item['title'], item['description'], float(item['price']), item['item_code'], item['trace'], item['image_path'], item['size'],item['color'], item['image_urls'][0], item['group_id'])
 
             self.cursor.execute(sql)
             self.conn.commit()
@@ -50,4 +53,15 @@ class MySQLStorePipeLine(object):
     def close_spider(self, spider):
         self.conn.close()
 
+class ImageStorePipeline(ImagesPipeline):
+    def set_filename(self, response):
+        # Return the image file name, use the md5 value of the given url
+        return 'full/{0}.jpg'.format(hashlib.md5(response.url).hexdigest())
 
+    def get_media_requests(self, item, info):
+        for image_url in item['image_urls']:
+            yield scrapy.Request(image_url)
+    def get_images(self, response, request, info):
+        for key, image, buf in super(ImageStorePipeline, self).get_images(response, request, info):
+            key = self.set_filename(response)
+        yield key, image, buf
